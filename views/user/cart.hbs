@@ -1,0 +1,60 @@
+<section>
+    <div class="container">
+        <table class="table mt-5">
+            <thead>
+                <tr>
+                    <th scope="col">item</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                     <th scope="col">Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each products}}
+                <tr>
+                    
+                <td><img style="width: 50px; height:70px" src="/product-images/{{this.product._id}}.jpg"></td>
+                <td>{{this.product.name}}</td>
+                 <td>{{this.product.price}}</td>
+                
+                <td><button class="cart-item-count mr-auto" onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user._id}}',-1)">-</button>
+                <span id="{{this.product._id}}">{{this.quantity}}</span>
+                <button class="cart-item-count ml-3" onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user._id}}',1)">+</button> </td>
+                <td>{{this.product.category}}</td>
+                <td><a href="" class="btn btn-danger">Remove</a></td>
+                </tr>{{/each}}
+            </tbody>
+        </table>
+        <hr>
+        <h3 class="text-end pr-5">Total: <span id="total">{{totalValue}}</span></h3><br>
+        <a href="/place-order" class="text-white btn btn-success float-end mr-5"  style="width: 15%;">Place Order</a>
+    </div>
+</section>
+<script>
+    function changeQuantity(cartId, proId,userId, count) {
+        let quantity=parseInt(document.getElementById(proId).innerHTML)
+        count=parseInt(count)
+        $.ajax({
+            url: '/change-product-quantity',
+            data: {
+                user:userId,
+                cart: cartId,
+                product: proId,
+                count: count,
+                quantity:quantity
+            },
+            method: 'post',
+            success: (response)=>{
+                if(response.removeProduct){
+                alert("Product Removed From Cart")
+                location.reload()
+                }else{
+                    document.getElementById(proId).innerHTML=quantity+count
+                    document.getElementById('total').innerHTML=response.total
+                }
+            }
+            
+        })
+    }
+</script>
